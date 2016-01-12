@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  MyTableViewController.h
 //  CoreDataTutorial
 //
 //  Created by Eva Puskas on 2014. 11. 16..
@@ -7,22 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+
 #import "User.h"
 
-@interface ViewController : UIViewController<UITextFieldDelegate>
+
+@interface MyTableViewController : UITableViewController <NSFetchedResultsControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, retain) NSFetchedResultsController *fetchedResultsController;
 
-@property (strong, nonatomic) IBOutlet UITextField *TextField1;
-@property (strong, nonatomic) IBOutlet UITextField *TextField2;
-@property (strong, nonatomic) IBOutlet UIButton *myButton;
+@property (strong, nonatomic) NSMutableArray *myArray;
 @property (strong, nonatomic) User *selecteduser;
-@property (strong, nonatomic) NSArray *myArray;
-@property (strong, nonatomic) NSString *samestring;
-@property (strong, nonatomic) IBOutlet UITextField *TextField3;
-
+- (UIView *)customSnapshotFromView:(UIView *)inputView;
 
 @end
-

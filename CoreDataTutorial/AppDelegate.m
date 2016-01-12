@@ -12,33 +12,42 @@
 
 @end
 
+NSString *storeFilename = @"CoreDataTutorial.sqlite";
+NSString *iCloudStoreFilename = @"iCloud.sqlite";
+
 @implementation AppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
     return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [self saveContext];
@@ -56,6 +65,10 @@
 }
 
 - (NSManagedObjectModel *)managedObjectModel {
+    
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
+    
+    
     // The managed object model for the application. It is a fatal error for the application not to be able to find and load its model.
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
@@ -66,6 +79,9 @@
 }
 
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
+    
     // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it.
     if (_persistentStoreCoordinator != nil) {
         return _persistentStoreCoordinator;
@@ -95,6 +111,9 @@
 
 
 - (NSManagedObjectContext *)managedObjectContext {
+    
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
+    
     // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
     if (_managedObjectContext != nil) {
         return _managedObjectContext;
@@ -104,7 +123,7 @@
     if (!coordinator) {
         return nil;
     }
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+    _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     [_managedObjectContext setPersistentStoreCoordinator:coordinator];
     return _managedObjectContext;
 }
@@ -112,6 +131,9 @@
 #pragma mark - Core Data Saving support
 
 - (void)saveContext {
+    
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
+    
     NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
     if (managedObjectContext != nil) {
         NSError *error = nil;
@@ -123,5 +145,48 @@
         }
     }
 }
+
+-(NSArray*)getAllUserRecords{
+    
+    [self iCloudAccountIsSignedIn];
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc]init];
+    
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:self.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    
+    NSSortDescriptor *sortDescriptor= [[NSSortDescriptor alloc]initWithKey:@"userName" ascending:YES];
+    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(hobbiesofuser.@count !=0)"];
+    [fetchRequest setPredicate:predicate];
+    
+    NSError *error;
+    
+    NSArray *fetchedRecords = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    return fetchedRecords;
+    
+    
+
+    
+}
+
+#pragma mark - iCloud
+- (BOOL)iCloudAccountIsSignedIn {
+    
+    NSLog(@"Running %@ '%@'", self.class, NSStringFromSelector(_cmd));
+    
+    id token = [[NSFileManager defaultManager] ubiquityIdentityToken];
+    if (token) {
+        NSLog(@"----iCloud is Logged In with token '%@' ----", token);
+        return YES;
+    }
+    NSLog(@"---- iCloud is NOT Logged In ----");
+    NSLog(@"Check these: Is iCloud Documents and Data enabled??? (Mac, IOS Device)--- iCloud Capability -App Target, ---- Code Sign Entitlements Error??");
+    
+    return NO;
+}
+
 
 @end

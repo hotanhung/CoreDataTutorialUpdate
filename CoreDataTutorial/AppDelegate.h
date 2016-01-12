@@ -17,8 +17,14 @@
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
+@property (nonatomic, readonly) NSPersistentStore *store;
+@property (nonatomic, readonly) NSPersistentStore *iCloudStore;
+
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
+-(NSArray*)getAllUserRecords;
+
+- (BOOL)iCloudAccountIsSignedIn;
 
 
 @end
